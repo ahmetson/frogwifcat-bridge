@@ -1,0 +1,7 @@
+build
+.next
+.terraform
+package-lock.json
+generated
+ampli.json
+src/utils/amplitude/ampli/index.ts
