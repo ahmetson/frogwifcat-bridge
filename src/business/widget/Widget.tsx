@@ -21,7 +21,9 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
   const formState = useFormState();
   const wallet = useAccount({
     onConnect({ address }) {
-      formState.setRecipient(address);
+      if(address) {
+        formState.setRecipient(address);
+      }
     },
   });
 
