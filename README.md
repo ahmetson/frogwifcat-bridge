@@ -31,14 +31,6 @@ npm run dev
 
 Then open your browser and visit [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Project Structure
-
-Our codebase is organized by features, making it easy to navigate and understand. More information about infrastructure setup can be found in the `infra/README.md` file.
-
-## Tests
-
-We're planning to add tests in the future. Updates will be shared as we progress.
-
 ## Further Information
 
 Here are some resources to better understand the technologies we're using:
