@@ -3,14 +3,13 @@ import {
   Message,
   MessageStatus,
 } from '@layerzerolabs/scan-client';
-import { ChainId, ChainListId } from '@layerzerolabs/lz-sdk';
 import { USE_TESTNET } from '@/business/blockchain/configuration';
 import { useState } from 'react';
 import { useInterval } from 'usehooks-ts';
 
 const client = createClient(USE_TESTNET ? 'testnet' : 'mainnet');
 
-const ChainIdToEndpointId = Object.keys(ChainListId).reduce<
+/*const ChainIdToEndpointId = Object.keys(ChainListId).reduce<
   Record<string, string>
 >((acc, chainKey) => {
   const chainId = Object(ChainListId)[chainKey];
@@ -23,11 +22,11 @@ const ChainIdToEndpointId = Object.keys(ChainListId).reduce<
     ...acc,
     [chainId]: endpointId,
   };
-}, {});
+}, {});*/
 
-export function getEndpointId(chainId: string): string | undefined {
-  return ChainIdToEndpointId[chainId];
-}
+//export function getEndpointId(chainId: string): string | undefined {
+//  return ChainIdToEndpointId[chainId];
+//}
 
 interface ITransaction {
   hash: string;

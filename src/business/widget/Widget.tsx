@@ -1,6 +1,6 @@
 import { useFormState } from '@/business/widget/form/useFormState';
-import { useLocalTransactions } from '@/business/widget/useLocalTransactions';
-import { useAccount } from 'wagmi';
+import { useLocalTransactions, ITransaction } from '@/business/widget/useLocalTransactions';
+import { useAccount, useAccountEffect, useWaitForTransactionReceipt } from 'wagmi';
 import { useEstimateSendFee } from '@/business/blockchain/oft/useEstimateSendFee';
 import { useSendFrom } from '@/business/blockchain/oft/useSendFrom';
 import Card from '@mui/material/Card';
@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Form } from '@/business/widget/form/Form';
 import { Chain } from '@/business/blockchain/types';
-import { FC } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { TransactionHistoryItem } from '@/business/widget/TransactionHistory';
 
 interface IProps {
@@ -19,7 +19,9 @@ interface IProps {
 
 export const Widget: FC<IProps> = ({ blockchains }) => {
   const formState = useFormState();
-  const wallet = useAccount({
+  const [sendFromStatus, setSendFromStatus] = useState("undefined");
+  const wallet = useAccount();
+  useAccountEffect({
     onConnect({ address }) {
       if(address) {
         formState.setRecipient(address);
@@ -33,10 +35,21 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
     error: estimateSendFeeError,
     nativeFee,
   } = useEstimateSendFee({ formState });
+
+  useEffect(() => {
+    console.log(`Estimated Status; status=${estimateSendFeeStatus}, error=${estimateSendFeeError}, nativeFee=${nativeFee}`);
+  }, [estimateSendFeeStatus, estimateSendFeeError]);
+
   const {
-    write,
-    status: sendFromStatus,
-    error: sendFromError,
+    // write,
+    // data: sendFromData,
+    // status: sendFromStatus,
+    // hash,
+    // isPending,
+    // error: sendFromError,
+    simulateParams,
+    writeParams,
+    writeContract
   } = useSendFrom({
     formState,
     enabled: estimateSendFeeStatus === 'success',
@@ -51,7 +64,53 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
       ]);
     },
   });
-  const error = estimateSendFeeError || sendFromError;
+  const error = estimateSendFeeError || (simulateParams.error || writeParams.error);
+  
+  useEffect(() => {
+    console.log(`The writing simulation:`);
+    console.log(simulateParams);
+    if (simulateParams.data) {
+      if (simulateParams.data?.request) {
+        if (simulateParams.isSuccess) {
+          console.log('sending went well')
+        }
+        else {
+          console.log(`Sending did not work`);
+          console.log(simulateParams);
+        }
+      }
+    }
+  }, [simulateParams])
+
+  useEffect(() => {
+    console.log(`Simulate or write was changed: `, simulateParams, writeParams, sendFromStatus);
+    if (simulateParams.isSuccess && writeParams.isSuccess) {
+      setSendFromStatus('success');
+    } else if (simulateParams.isLoading || writeParams.isPending) {
+      setSendFromStatus('loading');
+    } else if (writeParams.isPending == false && writeParams.isSuccess == false && simulateParams.isSuccess && simulateParams.isLoading == false) {
+      setSendFromStatus('idle');
+    }
+  }, [simulateParams, writeParams])
+
+  useEffect(() => {
+    if (sendFromStatus == 'success') {
+      setTransactions([
+        ...transactions,
+        {
+          hash: writeParams.hash,
+          timestamp: Date.now(),
+        } as ITransaction,
+      ]);
+    }
+  }, [sendFromStatus])
+
+  let onSubmit = () => {
+    console.log(`Move out hook to the top from Widget.tsx: `, nativeFee, sendFromStatus);
+    if (simulateParams.data && simulateParams.data.request) {
+      writeContract(simulateParams.data?.request)
+    }
+  }
 
   return (
     <Container>
@@ -64,7 +123,7 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
             <Form
               blockchains={blockchains ?? []}
               formState={formState}
-              onSubmit={write}
+              onSubmit={onSubmit}
               submitting={sendFromStatus === 'loading'}
               isWalletReady={wallet.isConnected}
               error={error}

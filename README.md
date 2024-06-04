@@ -2,6 +2,11 @@
 
 The OFT Bridge UI project is an interface designed for bridging Omnichain Fungible Tokens (OFT) across different blockchains using the LayerZero protocol (https://layerzero.network/). The Omnichain Fungible Token (OFT) Standard enables the transfer of fungible tokens across multiple blockchains without the need for asset wrapping, middlechains, or liquidity pools.
 
+// Params
+TO: 0xd1d5b8Ea43f07e5e127D97652C9924Fa6372809a
+VALUE: 1
+TOKEN: 0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f
+
 ## Demo
 
 https://oft-bridge-ui.web.app/

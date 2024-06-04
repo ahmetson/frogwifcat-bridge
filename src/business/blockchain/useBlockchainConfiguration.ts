@@ -1,51 +1,48 @@
 import { useEffect, useState } from 'react';
-import { configureChains, createConfig } from 'wagmi';
-import { getDefaultWallets } from '@rainbow-me/rainbowkit';
+import { http } from 'wagmi';
 import * as WagmiChains from 'wagmi/chains';
 import { walletConnectProjectId } from '@/utils/env';
-import { publicProvider } from 'wagmi/providers/public';
-import { ChainListId } from '@layerzerolabs/lz-sdk';
+import { EndpointId } from '@layerzerolabs/lz-definitions'
 import * as TrustWallet from './trustWallet';
-import { USE_TESTNET } from '@/business/blockchain/configuration';
-import * as LayerZero from './layerZero';
-import { Chain, ExtraChainData } from './types';
+import { ExtraChainData } from './types';
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 
-function isTestnet(bc: object) {
-  return !!('testnet' in bc && bc.testnet);
-}
+const SUPPORTED_ENDPOINT_IDS = [
+  EndpointId.SEPOLIA_V2_TESTNET, 
+  EndpointId.LINEASEP_V2_TESTNET, 
+  EndpointId.BASESEP_V2_TESTNET
+];
+const SUPPORTED_CHAIN_IDS = [
+  11155111,
+  59141,
+  84532 
+];
 
 function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
-  const { chains, publicClient } = configureChains<Chain>(
-    Object.values(WagmiChains)
-      .filter((bc) => {
-        if (!USE_TESTNET && isTestnet(bc)) {
-          return false;
-        }
+  const wagmiConfig = getDefaultConfig({
+    appName: 'FrogWifCat Bridge',
+    projectId: walletConnectProjectId,
+    chains: [WagmiChains.sepolia, WagmiChains.lineaSepolia, WagmiChains.baseSepolia],
+    transports: { 
+      [WagmiChains.sepolia.id]: http(), 
+      [WagmiChains.lineaSepolia.id]: http(), 
+      [WagmiChains.baseSepolia.id]: http(), 
+    },
+  })
 
+  let chains = Object.values(WagmiChains)
+      .filter((bc) => {
         return !!blockchains[String(bc.id)];
       })
       .map((bc) => ({
         ...bc,
         ...blockchains[String(bc.id)],
-      })),
-    [publicProvider()],
-  );
+      }));
 
-  const { connectors } = getDefaultWallets({
-    appName: 'OFT Bridge UI',
-    projectId: walletConnectProjectId,
-    chains,
-  });
-
-  const wagmiConfig = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient,
-  });
 
   return {
     wagmiConfig,
-    chains,
+    chains
   };
 }
 
@@ -56,20 +53,16 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
 async function buildExtraChainData(): Promise<Record<string, ExtraChainData>> {
   const blockchainIcons = await TrustWallet.fetchBlockchainIcons();
 
-  return Object.keys(ChainListId).reduce((acc, chainId) => {
-    const lzEndpointId = LayerZero.getEndpointId(chainId);
-
-    // Skip chain unsupported by LayerZero
-    if (!lzEndpointId) return acc;
-
-    return {
-      ...acc,
-      [chainId]: {
-        iconUrl: blockchainIcons[chainId],
-        lzEndpointId,
-      },
+  var chains: Record<string, ExtraChainData> = {};
+  for (var i = 0; i < SUPPORTED_CHAIN_IDS.length; ++i) {
+    const chainId = SUPPORTED_CHAIN_IDS[i];
+    chains[chainId] = {
+      iconUrl: blockchainIcons[chainId],
+      lzEndpointId: SUPPORTED_ENDPOINT_IDS[i].toString(),
     };
-  }, {});
+  }
+
+  return chains;
 }
 
 /**
