@@ -35,8 +35,9 @@ export const Form: FC<IProps> = ({
       value={formState.destinationChain}
     />
     <TextField
-      label="OFT Adress"
-      onChange={(e) => formState.setOftAddress(e.target.value as any)}
+      label="FrogWifCat (WEF)"
+      disabled={true}
+      // onChange={(e) => formState.setOftAddress(e.target.value as any)}
       value={formState.oftAddress}
     />
     <TextField

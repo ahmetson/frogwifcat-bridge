@@ -6,17 +6,43 @@ import { EndpointId } from '@layerzerolabs/lz-definitions'
 import * as TrustWallet from './trustWallet';
 import { ExtraChainData } from './types';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import { USE_TESTNET } from './configuration';
 
-const SUPPORTED_ENDPOINT_IDS = [
+const TESTNET_ENDPOINT_IDS = [
   EndpointId.SEPOLIA_V2_TESTNET, 
   EndpointId.LINEASEP_V2_TESTNET, 
   EndpointId.BASESEP_V2_TESTNET
 ];
-const SUPPORTED_CHAIN_IDS = [
+
+const TESTNET_CHAIN_IDS = [
   11155111,
   59141,
   84532 
 ];
+
+const MAINNET_ENDPOINT_IDS = [
+  EndpointId.ETHEREUM_V2_MAINNET,
+  EndpointId.ZKCONSENSYS_V2_MAINNET,
+  EndpointId.BASE_V2_MAINNET,
+]
+
+const MAINNET_CHAIN_IDS = [
+  1,
+  59144,
+  8453
+];
+
+const SUPPORTED_ENDPOINT_IDS = (USE_TESTNET) ? TESTNET_ENDPOINT_IDS : MAINNET_ENDPOINT_IDS;
+const SUPPORTED_CHAIN_IDS = (USE_TESTNET) ? TESTNET_CHAIN_IDS : MAINNET_CHAIN_IDS;
+
+export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
+  11155111: "0x32ce985bCab4961394A9167D15F5d509D6F23f06", // sepolia
+  59141: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f", // linea sepolia
+  84532: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f", // "base sepolia"
+  1: "0x",  // ethereum
+  59144: "0x", // linea
+  8453: "0x" // base
+};
 
 function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
   const wagmiConfig = getDefaultConfig({

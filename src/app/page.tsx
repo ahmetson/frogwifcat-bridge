@@ -5,10 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { useBlockchainConfiguration } from '@/business/blockchain/useBlockchainConfiguration';
 import { Widget } from '@/business/widget/Widget';
-import { lineaSepolia } from 'viem/chains';
+import { USE_TESTNET } from '@/business/blockchain/configuration';
+import { lineaSepolia, linea } from 'viem/chains';
 
 const queryClient = new QueryClient()
-
 
 export default function Home() {
   const config = useBlockchainConfiguration();
@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <WagmiProvider config={config.wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-      <RainbowKitProvider initialChain={lineaSepolia}>
+      <RainbowKitProvider initialChain={(USE_TESTNET) ? lineaSepolia : linea}>
         <Widget blockchains={config.chains} />
       </RainbowKitProvider>
       </QueryClientProvider>

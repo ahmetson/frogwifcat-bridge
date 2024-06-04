@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Form } from '@/business/widget/form/Form';
 import { Chain } from '@/business/blockchain/types';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { TransactionHistoryItem } from '@/business/widget/TransactionHistory';
 
 interface IProps {
@@ -121,7 +121,7 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
         <Card>
           <CardContent>
             <Form
-              blockchains={blockchains ?? []}
+              blockchains={blockchains.filter((chain) => chain.id != wallet.chainId) ?? []}
               formState={formState}
               onSubmit={onSubmit}
               submitting={sendFromStatus === 'loading'}

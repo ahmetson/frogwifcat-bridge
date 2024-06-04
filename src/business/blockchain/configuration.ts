@@ -1,3 +1,1 @@
-export const USE_TESTNET =
-  typeof window !== 'undefined' &&
-  window.document.location.search.includes('testnet');
+export const USE_TESTNET = (process.env.NEXT_PUBLIC_USE_TESTNET! === 'false') ? false : true;
