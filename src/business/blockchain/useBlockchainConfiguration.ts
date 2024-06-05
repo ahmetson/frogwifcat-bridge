@@ -48,11 +48,16 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
   const wagmiConfig = getDefaultConfig({
     appName: 'FrogWifCat Bridge',
     projectId: walletConnectProjectId,
-    chains: [WagmiChains.sepolia, WagmiChains.lineaSepolia, WagmiChains.baseSepolia],
-    transports: { 
+    chains: (USE_TESTNET) ? 
+      [WagmiChains.sepolia, WagmiChains.lineaSepolia, WagmiChains.baseSepolia] : 
+      [WagmiChains.mainnet, WagmiChains.linea],
+    transports: (USE_TESTNET) ? { 
       [WagmiChains.sepolia.id]: http(), 
       [WagmiChains.lineaSepolia.id]: http(), 
       [WagmiChains.baseSepolia.id]: http(), 
+    } : {
+      [WagmiChains.mainnet.id]: http(), 
+      [WagmiChains.linea.id]: http(),
     },
   })
 

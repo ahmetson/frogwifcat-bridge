@@ -1,1 +1,1 @@
-export const USE_TESTNET = (process.env.NEXT_PUBLIC_USE_TESTNET! === 'false') ? false : true;
+export const USE_TESTNET = (process.env.NEXT_PUBLIC_USE_TESTNET === 'false') ? false : true;
