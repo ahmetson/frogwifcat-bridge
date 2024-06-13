@@ -24,6 +24,7 @@ export type SendParam = {
 
 export function useEstimateSendFee({ formState }: IParams) {
   const _options = Options.newOptions();
+  console.log(`Chain id == ${formState.destinationChain?.id}, is it base? ${formState.destinationChain?.id == 8453}, network name ${formState.destinationChain?.name}`);
   if (formState.destinationChain?.id == 8453) {
   _options.addExecutorLzReceiveOption(1000000, 0);
   }
