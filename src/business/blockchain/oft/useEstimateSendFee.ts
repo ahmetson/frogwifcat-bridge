@@ -25,7 +25,7 @@ export type SendParam = {
 export function useEstimateSendFee({ formState }: IParams) {
   const _options = Options.newOptions();
   console.log(`Chain id == ${formState.destinationChain?.id}, adding 21,000 GAS limit`);
-  _options.addExecutorLzReceiveOption(210000, 0);
+  _options.addExecutorLzReceiveOption(70000, 0);
   let lzEndpoint = parseInt(formState.destinationChain?.lzEndpointId as string);
   console.log(`To: ${bytesToHex(hexToBytes(formState.recipient, { size: 32 }))}, ${hexToBytes("0x00", {size: 32})}`);
   const { data, status, error } = useReadContract({
