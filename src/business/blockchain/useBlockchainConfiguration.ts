@@ -23,13 +23,13 @@ const TESTNET_CHAIN_IDS = [
 const MAINNET_ENDPOINT_IDS = [
   EndpointId.ETHEREUM_V2_MAINNET,
   EndpointId.ZKCONSENSYS_V2_MAINNET,
-  //EndpointId.BASE_V2_MAINNET,
+  EndpointId.BASE_V2_MAINNET,
 ]
 
 const MAINNET_CHAIN_IDS = [
   1,
   59144,
-  //8453
+  8453
 ];
 
 const SUPPORTED_ENDPOINT_IDS = (USE_TESTNET) ? TESTNET_ENDPOINT_IDS : MAINNET_ENDPOINT_IDS;
@@ -41,7 +41,7 @@ export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
   84532: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f", // "base sepolia"
   1: "0x0564c3e8fe23c5a6220a300c303f41e43d9be9e2",  // ethereum
   59144: "0x889400fB9BDE04BFdf353cC718fED3d6dDcF735F", // linea
-  //8453: "0x" // base
+  8453: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f" // base
 };
 
 function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
@@ -50,7 +50,7 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
     projectId: walletConnectProjectId,
     chains: (USE_TESTNET) ? 
       [WagmiChains.sepolia, WagmiChains.lineaSepolia, WagmiChains.baseSepolia] : 
-      [WagmiChains.mainnet, WagmiChains.linea],
+      [WagmiChains.mainnet, WagmiChains.linea, WagmiChains.base],
     transports: (USE_TESTNET) ? { 
       [WagmiChains.sepolia.id]: http(), 
       [WagmiChains.lineaSepolia.id]: http(), 
@@ -58,6 +58,7 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
     } : {
       [WagmiChains.mainnet.id]: http(), 
       [WagmiChains.linea.id]: http(),
+      [WagmiChains.base.id]: http(),
     },
   })
 
