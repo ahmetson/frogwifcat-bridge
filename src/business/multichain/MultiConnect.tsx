@@ -43,8 +43,7 @@ export function WalletMultiButton(props: ButtonProps) {
 }
 
 export function MultiConnect() {
-  const { connection: solanaConnection } = useSollanaConnection();
-  const { publicKey: solanaPublicKey, sendTransaction, connected: solanaConnected, disconnect: solanaDisconnect } = useSolanaWallet();
+  const { publicKey: solanaPublicKey, connected: solanaConnected, disconnect: solanaDisconnect } = useSolanaWallet();
 
   const { openConnectModal: openEvmConnectModal } = useConnectModal();
   const { openChainModal: openEvmChainModal } = useChainModal();

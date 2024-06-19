@@ -9,12 +9,9 @@ import { USE_TESTNET } from '@/business/blockchain/configuration';
 import { lineaSepolia, linea } from 'viem/chains';
 import { solanaChain } from '../business/blockchain/useBlockchainConfiguration';
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { useMemo } from 'react';
 require('@solana/wallet-adapter-react-ui/styles.css');
 import {
   WalletModalProvider,
-  WalletDisconnectButton,
-  WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 
@@ -47,7 +44,7 @@ export default function Home() {
     <WagmiProvider config={config.wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider initialChain={(USE_TESTNET) ? lineaSepolia : linea}>
-          <ConnectionProvider endpoint={solanaChain.endpoint}>
+          <ConnectionProvider endpoint={solanaChain.rpcUrls.default.http[0]}>
             <WalletProvider wallets={wallets} autoConnect>
               <WalletModalProvider>
                 

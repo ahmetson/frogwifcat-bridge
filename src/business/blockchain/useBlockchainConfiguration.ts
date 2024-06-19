@@ -9,6 +9,7 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { USE_TESTNET } from './configuration';
 import { clusterApiUrl } from '@solana/web3.js';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { type Chain } from "./types";
 
 const TESTNET_ENDPOINT_IDS = [
   EndpointId.SEPOLIA_V2_TESTNET, 
@@ -46,10 +47,40 @@ export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
   8453: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f" // base
 };
 
-export const solanaChain = (USE_TESTNET) ? 
-  {name:"Solana Testnet", network: WalletAdapterNetwork.Testnet, endpoint: clusterApiUrl("testnet")}
+export const solanaChain: Chain = (USE_TESTNET) ? 
+  {
+    id: 0,
+    nativeCurrency: {
+      name: "SOL",
+      symbol: "SOL",
+      decimals: 9
+    },
+    name:"Solana Testnet", 
+    testnet: true,
+    rpcUrls: { 
+      "default": {
+        http: [clusterApiUrl(WalletAdapterNetwork.Testnet)] 
+      }
+    },
+    lzEndpointId: EndpointId.SOLANA_V2_TESTNET.toString(),
+  }
  :
-  {name: "Solana", network: WalletAdapterNetwork.Mainnet, endpoint: clusterApiUrl("mainnet-beta")}
+  {
+    id: 0,
+    nativeCurrency: {
+      name: "SOL",
+      symbol: "SOL",
+      decimals: 9
+    },
+    name: "Solana", 
+    testnet: false,
+    rpcUrls: {
+      "default": {
+        http: [clusterApiUrl(WalletAdapterNetwork.Mainnet)]
+      },
+    },
+    lzEndpointId: EndpointId.SOLANA_V2_MAINNET.toString(),
+  }
 ;
 
 function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
@@ -71,7 +102,7 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
   })
 
   //todo add solana testnet
-  let chains = Object.values(WagmiChains)
+  let chains: Array<Chain> = Object.values(WagmiChains)
       .filter((bc) => {
         return !!blockchains[String(bc.id)];
       })
@@ -79,7 +110,7 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
         ...bc,
         ...blockchains[String(bc.id)],
       }));
-
+  chains.push(solanaChain);
 
   return {
     wagmiConfig,

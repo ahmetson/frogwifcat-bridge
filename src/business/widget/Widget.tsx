@@ -12,12 +12,16 @@ import { Form } from '@/business/widget/form/Form';
 import { Chain } from '@/business/blockchain/types';
 import { FC, useEffect, useState } from 'react';
 import { TransactionHistoryItem } from '@/business/widget/TransactionHistory';
+import { useConnection as useSollanaConnection, useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
 
 interface IProps {
   blockchains: Chain[];
 }
 
 export const Widget: FC<IProps> = ({ blockchains }) => {
+  const { publicKey: solanaPublicKey, sendTransaction, connected: solanaConnected, disconnect: solanaDisconnect } = useSolanaWallet();
+  const { connection: solanaConnection } = useSollanaConnection();
+
   const formState = useFormState();
   const [sendFromStatus, setSendFromStatus] = useState("undefined");
   const wallet = useAccount();
@@ -121,7 +125,8 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
         <Card>
           <CardContent>
             <Form
-              blockchains={blockchains.filter((chain) => chain.id != wallet.chainId) ?? []}
+              blockchains={blockchains.filter((chain) => 
+                solanaConnected ? chain.id != 0 : chain.id != wallet.chainId) ?? []}
               formState={formState}
               onSubmit={onSubmit}
               submitting={sendFromStatus === 'loading'}

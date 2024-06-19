@@ -10,6 +10,7 @@ export function useFormState() {
   const [value, setValue] = useState('0');
   const [recipient, setRecipient] = useState<`0x${string}`>('0x');
 
+  // Use the solana blockchain as well
   const { chain } = useAccount();
 
   useEffect(() => {
