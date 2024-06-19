@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { MultiConnect } from "../multichain/MultiConnect";
 import { Form } from '@/business/widget/form/Form';
 import { Chain } from '@/business/blockchain/types';
 import { FC, useEffect, useState } from 'react';
@@ -116,7 +116,7 @@ export const Widget: FC<IProps> = ({ blockchains }) => {
     <Container>
       <Stack gap={4}>
         <div style={{ margin: '48px auto 0' }}>
-          <ConnectButton />
+          <MultiConnect />
         </div>
         <Card>
           <CardContent>

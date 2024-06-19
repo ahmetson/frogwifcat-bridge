@@ -7,6 +7,8 @@ import * as TrustWallet from './trustWallet';
 import { ExtraChainData } from './types';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { USE_TESTNET } from './configuration';
+import { clusterApiUrl } from '@solana/web3.js';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 
 const TESTNET_ENDPOINT_IDS = [
   EndpointId.SEPOLIA_V2_TESTNET, 
@@ -44,6 +46,12 @@ export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
   8453: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f" // base
 };
 
+export const solanaChain = (USE_TESTNET) ? 
+  {name:"Solana Testnet", network: WalletAdapterNetwork.Testnet, endpoint: clusterApiUrl("testnet")}
+ :
+  {name: "Solana", network: WalletAdapterNetwork.Mainnet, endpoint: clusterApiUrl("mainnet-beta")}
+;
+
 function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
   const wagmiConfig = getDefaultConfig({
     appName: 'FrogWifCat Bridge',
@@ -62,6 +70,7 @@ function buildRainbowKitConfigs(blockchains: Record<string, ExtraChainData>) {
     },
   })
 
+  //todo add solana testnet
   let chains = Object.values(WagmiChains)
       .filter((bc) => {
         return !!blockchains[String(bc.id)];
