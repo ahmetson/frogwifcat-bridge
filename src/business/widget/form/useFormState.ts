@@ -8,7 +8,7 @@ export function useFormState() {
 
   const [oftAddress, setOftAddress] = useState<`0x${string}`>('0x');
   const [value, setValue] = useState('0');
-  const [recipient, setRecipient] = useState<`0x${string}`>('0x');
+  const [recipient, setRecipient] = useState<`${string}`>('');
 
   // Use the solana blockchain as well
   const { chain } = useAccount();

@@ -5,6 +5,9 @@ import { FormState } from '@/business/widget/form/useFormState';
 import { getCause } from '@/utils/getCause';
 import {Options} from '@layerzerolabs/lz-v2-utilities';
 import { hexToBytes, bytesToHex } from 'viem';
+import { DEPLOYED_ADDRESSES, ReceiverGasLimit } from '../useBlockchainConfiguration';
+import { PublicKey } from '@solana/web3.js';
+import { Console } from 'console';
 
 interface IParams {
   formState: FormState;
@@ -22,12 +25,35 @@ export type SendParam = {
   oftCmd: string;
 }
 
+const addrToHex = (chainId: number, addr: string): string|undefined => {
+  if (chainId == 0) {
+    let publicKey: PublicKey;
+    try {
+      publicKey = new PublicKey(addr);
+    } catch(err) {
+      return undefined;
+    }
+    const to = '0x' + Buffer.from(publicKey.toBytes()).toString('hex'); 
+    return to;
+  } 
+  BYTES32_ZEROES.substring(0, 13*2) + addr.substring(2);
+}
+
 export function useEstimateSendFee({ formState }: IParams) {
   const _options = Options.newOptions();
   console.log(`Chain id == ${formState.destinationChain?.id}, adding 21,000 GAS limit`);
-  _options.addExecutorLzReceiveOption(70000, 0);
+  const [gasLimit, nativeDrop] = ReceiverGasLimit(formState.destinationChain?.id!);
+  _options.addExecutorLzReceiveOption(gasLimit, 0);
+  const to = addrToHex(formState.destinationChain?.id!, formState.recipient);
+  if (formState.destinationChain?.id === 0) {
+    console.log("native drop to " + to);
+    _options.addExecutorNativeDropOption(nativeDrop, to!)
+  }
   let lzEndpoint = parseInt(formState.destinationChain?.lzEndpointId as string);
-  console.log(`To: ${bytesToHex(hexToBytes(formState.recipient, { size: 32 }))}, ${hexToBytes("0x00", {size: 32})}`);
+  
+  const logTo = `${formState.recipient}, ${hexToBytes("0x00", {size: 32})}`;
+  
+  console.log(`To: ${logTo}, prefixed: ${to}, gas limit: ${gasLimit} in ${nativeDrop} dest: ${formState.destinationChain?.lzEndpointId}`);
   const { data, status, error } = useReadContract({
     query: {
       enabled: !!(
@@ -39,7 +65,7 @@ export function useEstimateSendFee({ formState }: IParams) {
     functionName: 'quoteSend',
     args: [{
       dstEid: lzEndpoint,
-      to: BYTES32_ZEROES.substring(0, 13*2) + formState.recipient.substring(2),
+      to: to,
       amountLD: parseEther(formState.value, "wei"),
       minAmountLD: parseEther(formState.value, "wei"),
       extraOptions: _options.toHex(),
@@ -50,6 +76,7 @@ export function useEstimateSendFee({ formState }: IParams) {
     ],
   });
 
+  console.log(data, status, error);
   const nativeFee: bigint | undefined =
     status === 'success' ? (data as any)['nativeFee'] : undefined;
 

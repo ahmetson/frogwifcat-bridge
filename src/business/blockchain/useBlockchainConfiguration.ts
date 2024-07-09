@@ -7,7 +7,7 @@ import * as TrustWallet from './trustWallet';
 import { ExtraChainData } from './types';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { USE_TESTNET } from './configuration';
-import { clusterApiUrl } from '@solana/web3.js';
+import { PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { type Chain } from "./types";
 
@@ -38,7 +38,8 @@ const MAINNET_CHAIN_IDS = [
 const SUPPORTED_ENDPOINT_IDS = (USE_TESTNET) ? TESTNET_ENDPOINT_IDS : MAINNET_ENDPOINT_IDS;
 const SUPPORTED_CHAIN_IDS = (USE_TESTNET) ? TESTNET_CHAIN_IDS : MAINNET_CHAIN_IDS;
 
-export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
+export const DEPLOYED_ADDRESSES: {[key: number]: `${string}`} = {
+  0: (USE_TESTNET) ? "0x03b01f5823a06030a2bc9d6c9ffc69996490dd515359be24bbb94dc4a2b80b88" : "0x5f2b904f10210b8e3a35e38775b09d0fbcfe7985c23b75c17a789effd93fd308",
   11155111: "0x32ce985bCab4961394A9167D15F5d509D6F23f06", // sepolia
   59141: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f", // linea sepolia
   84532: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f", // "base sepolia"
@@ -46,6 +47,14 @@ export const DEPLOYED_ADDRESSES: {[key: number]: `0x${string}`} = {
   59144: "0x889400fB9BDE04BFdf353cC718fED3d6dDcF735F", // linea
   8453: "0xe40c7856B6D0e1B01dECBF9976BB706B9Cd1229f" // base
 };
+
+export const ReceiverGasLimit = (chainId: number) => {
+  if (chainId === 0) {
+    return [200000, 2500000];
+  } else {
+    return [70000, 0];
+  }
+}
 
 export const solanaChain: Chain = (USE_TESTNET) ? 
   {
